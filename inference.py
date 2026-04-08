@@ -3,12 +3,10 @@ from openai import OpenAI
 from env.environment import EmailEnv
 from env.models import Action
 
-# environment variables
 API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")  # NO DEFAULT
+HF_TOKEN = os.getenv("HF_TOKEN")
 
-# OpenAI client
 client = OpenAI(api_key="HF_TOKEN", base_url=API_BASE_URL)
 
 
@@ -53,8 +51,7 @@ def run(task):
     step_count = 0
 
     while not done:
-        # FIX: access observation wrapper
-        email = obs["observation"]["emails"][len(env.actions)]
+        email = obs["emails"][len(env.actions)]
 
         label = get_label_from_model(email)
 
