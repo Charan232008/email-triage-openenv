@@ -3,18 +3,16 @@ from openai import OpenAI
 from env.environment import EmailEnv
 from env.models import Action
 
-# required environment variables
+# environment variables
 API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")  # NO DEFAULT (IMPORTANT)
+HF_TOKEN = os.getenv("HF_TOKEN")  # NO DEFAULT
 
-# initialize OpenAI client
+# OpenAI client
 client = OpenAI(api_key="HF_TOKEN", base_url=API_BASE_URL)
 
 
 def get_label_from_model(email):
-    """LLM call with safe fallback"""
-
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
@@ -36,17 +34,6 @@ def get_label_from_model(email):
 
     except Exception:
         subject = email["subject"].lower()
-
-        if "free" in subject or "lottery" in subject:
-            return "spam"
-        elif "newsletter" in subject:
-            return "ignore"
-        else:
-            return "important"
-
-    except Exception:
-        # fallback logic (ensures reproducibility)
-        subject = email.subject.lower()
 
         if "free" in subject or "lottery" in subject:
             return "spam"
