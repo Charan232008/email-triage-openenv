@@ -5,24 +5,32 @@ from env.graders import grade
 class EmailEnv:
 
     def __init__(self, task="easy"):
-        self.tasks = get_tasks()
+        self.task_data = get_tasks()
         self.task_name = task
-        self.emails = self.tasks[task]
+        self.emails = self.task_data[task]
         self.done = False
         self.actions = []
 
     def reset(self):
         self.done = False
         self.actions = []
-        return Observation(emails=self.emails, message="Start triaging emails")
 
-    def step(self, action: Action):
+        return Observation(
+            emails=self.emails,
+            message="Start triaging emails"
+        ).model_dump()
+
+    def step(self, action):
+        # handle dict input from OpenEnv
+        if isinstance(action, dict):
+            action = Action(**action)
+
         self.actions.append(action)
 
-        # small reward for progress
+        # small progress reward
         reward = 0.1
 
-        # penalty if too many actions
+        # penalty for extra actions
         if len(self.actions) > len(self.emails):
             reward = -0.1
 
@@ -32,7 +40,10 @@ class EmailEnv:
             reward = grade(self.task_name, self.actions)
 
         return (
-            Observation(emails=self.emails, message="Continue"),
+            Observation(
+                emails=self.emails,
+                message="Continue"
+            ).model_dump(),
             reward,
             self.done,
             {}
