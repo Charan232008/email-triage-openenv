@@ -12,10 +12,10 @@ class EmailEnv:
         self.actions = []
 
     def reset(self):
-        self.done = False
-        self.actions = []
-
-        return {
+     self.done = False
+     self.actions = []
+     return {
+        "observation": {
             "emails": [
                 {
                     "id": e.id,
@@ -26,6 +26,7 @@ class EmailEnv:
             ],
             "message": "Start triaging emails"
         }
+    }
 
     def step(self, action):
         if isinstance(action, dict):
@@ -43,21 +44,23 @@ class EmailEnv:
             reward = grade(self.task_name, self.actions)
 
         return (
-            {
-                "emails": [
-                    {
-                        "id": e.id,
-                        "subject": e.subject,
-                        "body": e.body
-                    }
-                    for e in self.emails
-                ],
-                "message": "Continue"
-            },
-            reward,
-            self.done,
-            {}
-        )
+    {
+        "observation": {
+            "emails": [
+                {
+                    "id": e.id,
+                    "subject": e.subject,
+                    "body": e.body
+                }
+                for e in self.emails
+            ],
+            "message": "Continue"
+        }
+    },
+    reward,
+    self.done,
+    {}
+)
 
     def state(self):
         return {
