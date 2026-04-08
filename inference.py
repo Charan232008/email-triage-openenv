@@ -53,7 +53,8 @@ def run(task):
     step_count = 0
 
     while not done:
-        email = obs["emails"][len(env.actions)]
+        # FIX: access observation wrapper
+        email = obs["observation"]["emails"][len(env.actions)]
 
         label = get_label_from_model(email)
 
