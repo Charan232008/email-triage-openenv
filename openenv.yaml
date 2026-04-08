@@ -1,0 +1,11 @@
+name: email-triage-env
+description: Real-world email classification environment for intelligent agents
+entry_point: env.environment:EmailEnv
+
+tasks:
+  - name: easy
+    description: Basic spam detection
+  - name: medium
+    description: Mixed priority classification
+  - name: hard
+    description: Complex real-world email triage
