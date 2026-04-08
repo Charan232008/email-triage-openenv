@@ -1,4 +1,4 @@
-from env.models import Observation, Action
+from env.models import Action
 from env.tasks import get_tasks
 from env.graders import grade
 
@@ -15,35 +15,45 @@ class EmailEnv:
         self.done = False
         self.actions = []
 
-        return Observation(
-            emails=self.emails,
-            message="Start triaging emails"
-        ).model_dump()
+        return {
+            "emails": [
+                {
+                    "id": e.id,
+                    "subject": e.subject,
+                    "body": e.body
+                }
+                for e in self.emails
+            ],
+            "message": "Start triaging emails"
+        }
 
     def step(self, action):
-        # handle dict input from OpenEnv
         if isinstance(action, dict):
             action = Action(**action)
 
         self.actions.append(action)
 
-        # small progress reward
         reward = 0.1
 
-        # penalty for extra actions
         if len(self.actions) > len(self.emails):
             reward = -0.1
 
-        # final scoring
         if len(self.actions) == len(self.emails):
             self.done = True
             reward = grade(self.task_name, self.actions)
 
         return (
-            Observation(
-                emails=self.emails,
-                message="Continue"
-            ).model_dump(),
+            {
+                "emails": [
+                    {
+                        "id": e.id,
+                        "subject": e.subject,
+                        "body": e.body
+                    }
+                    for e in self.emails
+                ],
+                "message": "Continue"
+            },
             reward,
             self.done,
             {}
